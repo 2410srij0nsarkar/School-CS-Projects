@@ -47,14 +47,20 @@ def Template_Map():
         numcities = len(cities)
         for i in range(numcities):
             city = cities[i]
+            # Secondary check for duplicate markers
+            city_key = city.capitalize()
+            if city_key in coordinates:
+                continue
+
             lat = float(lats[i])
             long = float(longs[i])
+
             marker = map_widget.set_marker(
                 lat, long, text=city, font=("Fixedsys", 20, "bold")
             )
             map_widget.set_position(lat, long)
 
-            coordinates[cities[i].capitalize()] = marker
+            coordinates[city_key] = marker
 
         # Set Status Label
         statstr.set("Template Toggled!")
@@ -62,14 +68,11 @@ def Template_Map():
 
     elif switch_var.get() == "off":
         # Delete all Template Markers
-        tempcords = coordinates.copy()
 
-        for place, marker in coordinates.items():
+        for place in list(coordinates.keys()):
             if place.title() in cities:
-                marker.delete()
-                del tempcords[place]
-
-        coordinates = tempcords.copy()
+                coordinates[place].delete()
+                del coordinates[place]
 
         # Set Status Label
         statstr.set("Toggle Off!!")
@@ -431,7 +434,7 @@ locbox = CTkListbox(loc_frame)
 locbox.pack()
 
 # Delete Button
-delete = ct.CTkButton(
+delete_button = ct.CTkButton(
     master=app,
     text="DELETE",
     font=("Fixedsys", 45),
@@ -440,7 +443,7 @@ delete = ct.CTkButton(
     bg_color="Black",
     command=delete,
 )
-delete.place(relx=right_relx, rely=0.79, anchor=ct.CENTER)
+delete_button.place(relx=right_relx, rely=0.79, anchor=ct.CENTER)
 
 # Delete Entry
 delentry = ct.CTkEntry(
